@@ -1,6 +1,6 @@
 ---
 title: "Problem Set 1"
-author: "Your Name"
+author: "Christy Ahn"
 date: "`r Sys.Date()`"
 output: github_document
 ---
@@ -40,6 +40,14 @@ This section will test your understanding of basic R syntax, data types, and vec
 
 ```{r}
 # Your code here
+course_name <- "Introduction to Data Science"
+num_students <- 45
+class(course_name)
+class(num_students)
+pi_value <- 3.14159
+is_active <- TRUE
+num_students >= 50
+course_name == "introduction to data science"
 ```
 
 ---
@@ -53,6 +61,14 @@ This section will test your understanding of basic R syntax, data types, and vec
 
 ```{r}
 # Your code here
+temperature <- c(22, 25, 19, 28, 23)
+sum(temperature)
+mean(temperature)
+temperature <- c(temperature, 30)
+is_hot <- temperature > 25
+
+print(temperature)
+print(is_hot)
 ```
 
 ---
@@ -74,11 +90,17 @@ mtcars_processed <- mtcars %>%
 
 # Your code starts here: Filter and arrange mtcars_processed
 # Your code here
+result <- mtcars_processed %>%
+  filter((cyl == 4 | cyl == 6) & mpg > 20) %>%
+  arrange(mpg, desc(cyl))
+
+print(result)
 ```
 
 ### Short Answer
 Based on your filtered and arranged results, briefly describe the characteristics of the cars that appear at the top of your output. What does this tell you about the relationship between cylinders and miles per gallon in this subset?
 
+The cars that appear at the top seem to have a digit of 6 for cyl, paired with a lower number for mpg compared to the cars that appear later in the data. This tells me that typically, a smaller number of cylinders correlate to more miles per gallon.
 ---
 
 ### Task 1.2: Mutating and Selecting
@@ -94,11 +116,25 @@ Using the `mtcars_processed` dataset:
 
 ```{r}
 # Your code here
+mtcars_final <- mtcars_processed %>%
+  mutate(
+    hp_per_wt = hp / wt,
+    qsec_category = case_when(
+      qsec < 17 ~ "Fast",
+      qsec >= 17 & qsec < 19 ~ "Medium",
+      qsec >= 19 ~ "Slow"
+    )) %>%
+
+select(car_model, mpg, hp, wt, hp_per_wt, qsec_category)
+
+print(mtcars_final)
 ```
 
 ### Short Answer
 Why might creating `hp_per_wt` and `qsec_category` be useful metrics when analyzing car performance, beyond just raw horsepower and weight?
 
+hp_per_wt allows us to see how strong each car is for their size, rather than just looking at horsepower without the weight variable. A car can have more horsepower but also be twice the size of the car it's being compared to, so hp_per_wt allows us make fairer performance comparisons.
+qsec_category allows us to see which cars are actually fast or slow, regardless of the other variables.
 ---
 
 ### Task 1.3: Grouped Summaries
@@ -111,10 +147,19 @@ Using the `mtcars_processed` dataset:
 
 ```{r}
 # Your code here
+summary_table <- mtcars_processed %>%
+group_by(cyl, am) %>%
+summarise(average_mpg = mean(mpg), median_hp = median(hp), n = n()) %>%
+  
+arrange(cyl, desc(average_mpg))
+
+print(summary_table)
 ```
 
 ### Short Answer
 Based on your grouped summary, what general trends do you observe regarding average `mpg` and median `hp` across different combinations of `cylinders` and `transmission` types? How do these summaries help differentiate car characteristics?
+
+Cars with fewer cylinders (specifcally 4) and manual transmission have the highest average mpg and lowest horsepower, while 8-cylinder cars, especially manuals, have the lowest mpg and highest horsepower. These grouped summaries make it easy to see that cylinder count and transmission type are linked to fuel efficiency and power.
 
 ---
 
@@ -167,21 +212,29 @@ This task demonstrates how creating new variables that depend on previous time p
 
 ```{r}
 # Your code here
+product_sales_wide <- product_sales_wide %>%
+  mutate(Growth_2021 = (Year_2021 - Year_2020) / Year_2020 * 100,
+    Growth_2022 = (Year_2022 - Year_2021) / Year_2021 * 100)
 ```
 
 2.  **Reshape to Long Format:** Reshape `product_sales_wide` into a long format called `product_sales_long`. Pivot the year columns (`Year_2020`, `Year_2021`, `Year_2022`) into two new columns: `Year` and `Sales`. Make sure `Year` is numeric.
 
 ```{r}
 # Your code here
+product_sales_long <- pivot_longer(product_sales_wide, 
+  starts_with("Year_"), names_to = "Year", values_to = "Sales") %>%
+  mutate(Year = as.numeric(sub("Year_", "", Year)))
 ```
 3.  **Analysis in Long Format:** Using the `product_sales_long` dataset, calculate a single `Growth_Rate` column that represents the year-over-year growth for each product. You should use `group_by()` and `lag()`. The formula for growth rate is `(current_year_sales - previous_year_sales) / previous_year_sales * 100`.
 
 ```{r}
 # Your code here
+product_sales_long %>% group_by(product) %>% arrange(product, Year) %>% mutate(Growth_Rate = (Sales - lag(Sales)) / lag(Sales) * 100)
 ```
 
 ### Short Answer
 Compare the code required to calculate the year-over-year growth rate in the wide format versus the long format. Which approach is more concise and scalable if you had many more years of data? Why is the long format generally preferred for this type of time-series calculation?
+
 
 ---
 
@@ -194,16 +247,24 @@ This task explores combining student demographic information with their academic
 3.  **Advanced Mutate (after Left Join):** After performing the left join, calculate the **average `grade_score` for each student**. This will require grouping by `student_id` and `student_name`.
 
 ```{r}
-# Your code for inner_join and its explanation
-```{r}
-# Your code for left_join and its explanation
-```{r}
-# Your code for advanced mutate after left join
+# 1. Your code for inner_join and its explanation
+inner_join_result <- inner_join(students_demographics, student_grades, by = "student_id")
+#it returns only students who have both demographic and grade records, so students without grades are excluded.
+
+# 2. Your code for left_join and its explanation
+left_join_result <- left_join(students_demographics, student_grades, by = "student_id")
+# Left join keeps all the students, but it fills grade info with NA if no grades exist.
+
+# 3. Your code for advanced mutate after left join
+average_grades <- left_join_result %>%
+  group_by(student_id, student_name) %>%
+  summarise(avg_grade_score = mean(grade_score, na.rm = TRUE))
 ```
 
 ### Short Answer
 Compare the number of rows and the content of the `inner_join()` and `left_join()` results. Specifically, identify which student(s) are present in one join but not the other, and explain why. What does the average grade calculation reveal about students with multiple grades or no grades?
 
+The inner_join result has fewer rows than the left_join because it only includes students who have both demographic and grade records, excluding the students without grades. Students in the left_join but missing in the inner_join are the students who have demographic info but no grade records. The average grade calculation shows that students with multiple grades have their scores averaged, while those with no grades show an average of NA, indicating missing grade data.
 ---
 
 ### Task 2.3: Filtering Joins: Identifying Student Enrollment Status
@@ -216,14 +277,18 @@ This task focuses on using filtering joins to identify different categories of s
 
 ```{r}
 # Your code for question 1 (semi_join)
-```{r}
+enrolled_students <- semi_join(students_demographics, student_grades, by = "student_id")
+
 # Your code for question 2 (anti_join on students_demographics)
-```{r}
+students_without_grades <- anti_join(students_demographics, student_grades, by = "student_id")
+
 # Your code for question 3 (anti_join on student_grades)
+grades_without_students <- anti_join(student_grades, students_demographics, by = "student_id")
 ```
 
 ### Short Answer
 Describe the distinct insights gained from each of the three filtering joins in this task. How do these joins help in data validation and understanding the completeness of your student records?
 
+The semi_join shows which students are enrolled and have grade records, confirming who is engaged. The anti_join on demographics shows the students without any grades, helping identify any new or incomplete records. The anti_join on grades flags any grade entries that don’t match students, pointing out possible data errors or outdated records. These joins help in data validation and understanding the completeness of student records because it covers different scenarios that give us a more robust understanding of the data.
 
 
