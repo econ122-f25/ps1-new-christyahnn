@@ -1,6 +1,6 @@
 Problem Set 1
 ================
-Your Name
+Christy Ahn
 2025-09-12
 
 ### Introduction
@@ -44,7 +44,32 @@ and vector operations.
 
 ``` r
 # Your code here
+course_name <- "Introduction to Data Science"
+num_students <- 45
+class(course_name)
 ```
+
+    ## [1] "character"
+
+``` r
+class(num_students)
+```
+
+    ## [1] "numeric"
+
+``` r
+pi_value <- 3.14159
+is_active <- TRUE
+num_students >= 50
+```
+
+    ## [1] FALSE
+
+``` r
+course_name == "introduction to data science"
+```
+
+    ## [1] FALSE
 
 ------------------------------------------------------------------------
 
@@ -60,7 +85,32 @@ and vector operations.
 
 ``` r
 # Your code here
+temperature <- c(22, 25, 19, 28, 23)
+sum(temperature)
 ```
+
+    ## [1] 117
+
+``` r
+mean(temperature)
+```
+
+    ## [1] 23.4
+
+``` r
+temperature <- c(temperature, 30)
+is_hot <- temperature > 25
+
+print(temperature)
+```
+
+    ## [1] 22 25 19 28 23 30
+
+``` r
+print(is_hot)
+```
+
+    ## [1] FALSE FALSE FALSE  TRUE FALSE  TRUE
 
 ------------------------------------------------------------------------
 
@@ -87,7 +137,28 @@ mtcars_processed <- mtcars %>%
 
 # Your code starts here: Filter and arrange mtcars_processed
 # Your code here
+result <- mtcars_processed %>%
+  filter((cyl == 4 | cyl == 6) & mpg > 20) %>%
+  arrange(mpg, desc(cyl))
+
+print(result)
 ```
+
+    ##         car_model  mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+    ## 1       Mazda RX4 21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+    ## 2   Mazda RX4 Wag 21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+    ## 3  Hornet 4 Drive 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+    ## 4      Volvo 142E 21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2
+    ## 5   Toyota Corona 21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
+    ## 6      Datsun 710 22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+    ## 7        Merc 230 22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
+    ## 8       Merc 240D 24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
+    ## 9   Porsche 914-2 26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
+    ## 10      Fiat X1-9 27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
+    ## 11    Honda Civic 30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
+    ## 12   Lotus Europa 30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
+    ## 13       Fiat 128 32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+    ## 14 Toyota Corolla 33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
 
 ### Short Answer
 
@@ -96,7 +167,7 @@ characteristics of the cars that appear at the top of your output. What
 does this tell you about the relationship between cylinders and miles
 per gallon in this subset?
 
-------------------------------------------------------------------------
+## The cars that appear at the top seem to have a digit of 6 for cyl, paired with a lower number for mpg compared to the cars that appear later in the data. This tells me that typically, a smaller number of cylinders correlate to more miles per gallon.
 
 ### Task 1.2: Mutating and Selecting
 
@@ -114,14 +185,65 @@ Using the `mtcars_processed` dataset:
 
 ``` r
 # Your code here
+mtcars_final <- mtcars_processed %>%
+  mutate(
+    hp_per_wt = hp / wt,
+    qsec_category = case_when(
+      qsec < 17 ~ "Fast",
+      qsec >= 17 & qsec < 19 ~ "Medium",
+      qsec >= 19 ~ "Slow"
+    )) %>%
+
+select(car_model, mpg, hp, wt, hp_per_wt, qsec_category)
+
+print(mtcars_final)
 ```
+
+    ##              car_model  mpg  hp    wt hp_per_wt qsec_category
+    ## 1            Mazda RX4 21.0 110 2.620  41.98473          Fast
+    ## 2        Mazda RX4 Wag 21.0 110 2.875  38.26087        Medium
+    ## 3           Datsun 710 22.8  93 2.320  40.08621        Medium
+    ## 4       Hornet 4 Drive 21.4 110 3.215  34.21462          Slow
+    ## 5    Hornet Sportabout 18.7 175 3.440  50.87209        Medium
+    ## 6              Valiant 18.1 105 3.460  30.34682          Slow
+    ## 7           Duster 360 14.3 245 3.570  68.62745          Fast
+    ## 8            Merc 240D 24.4  62 3.190  19.43574          Slow
+    ## 9             Merc 230 22.8  95 3.150  30.15873          Slow
+    ## 10            Merc 280 19.2 123 3.440  35.75581        Medium
+    ## 11           Merc 280C 17.8 123 3.440  35.75581        Medium
+    ## 12          Merc 450SE 16.4 180 4.070  44.22604        Medium
+    ## 13          Merc 450SL 17.3 180 3.730  48.25737        Medium
+    ## 14         Merc 450SLC 15.2 180 3.780  47.61905        Medium
+    ## 15  Cadillac Fleetwood 10.4 205 5.250  39.04762        Medium
+    ## 16 Lincoln Continental 10.4 215 5.424  39.63864        Medium
+    ## 17   Chrysler Imperial 14.7 230 5.345  43.03087        Medium
+    ## 18            Fiat 128 32.4  66 2.200  30.00000          Slow
+    ## 19         Honda Civic 30.4  52 1.615  32.19814        Medium
+    ## 20      Toyota Corolla 33.9  65 1.835  35.42234          Slow
+    ## 21       Toyota Corona 21.5  97 2.465  39.35091          Slow
+    ## 22    Dodge Challenger 15.5 150 3.520  42.61364          Fast
+    ## 23         AMC Javelin 15.2 150 3.435  43.66812        Medium
+    ## 24          Camaro Z28 13.3 245 3.840  63.80208          Fast
+    ## 25    Pontiac Firebird 19.2 175 3.845  45.51365        Medium
+    ## 26           Fiat X1-9 27.3  66 1.935  34.10853        Medium
+    ## 27       Porsche 914-2 26.0  91 2.140  42.52336          Fast
+    ## 28        Lotus Europa 30.4 113 1.513  74.68605          Fast
+    ## 29      Ford Pantera L 15.8 264 3.170  83.28076          Fast
+    ## 30        Ferrari Dino 19.7 175 2.770  63.17690          Fast
+    ## 31       Maserati Bora 15.0 335 3.570  93.83754          Fast
+    ## 32          Volvo 142E 21.4 109 2.780  39.20863        Medium
 
 ### Short Answer
 
 Why might creating `hp_per_wt` and `qsec_category` be useful metrics
 when analyzing car performance, beyond just raw horsepower and weight?
 
-------------------------------------------------------------------------
+hp_per_wt allows us to see how strong each car is for their size, rather
+than just looking at horsepower without the weight variable. A car can
+have more horsepower but also be twice the size of the car it’s being
+compared to, so hp_per_wt allows us make fairer performance comparisons.
+qsec_category allows us to see which cars are actually fast or slow,
+regardless of the other variables. —
 
 ### Task 1.3: Grouped Summaries
 
@@ -136,7 +258,25 @@ Using the `mtcars_processed` dataset:
 
 ``` r
 # Your code here
+summary_table <- mtcars_processed %>%
+group_by(cyl, am) %>%
+summarise(average_mpg = mean(mpg), median_hp = median(hp), n = n()) %>%
+  
+arrange(cyl, desc(average_mpg))
+
+print(summary_table)
 ```
+
+    ## # A tibble: 6 × 5
+    ## # Groups:   cyl [3]
+    ##     cyl    am average_mpg median_hp     n
+    ##   <dbl> <dbl>       <dbl>     <dbl> <int>
+    ## 1     4     1        28.1      78.5     8
+    ## 2     4     0        22.9      95       3
+    ## 3     6     1        20.6     110       3
+    ## 4     6     0        19.1     116.      4
+    ## 5     8     1        15.4     300.      2
+    ## 6     8     0        15.0     180      12
 
 ### Short Answer
 
@@ -144,6 +284,12 @@ Based on your grouped summary, what general trends do you observe
 regarding average `mpg` and median `hp` across different combinations of
 `cylinders` and `transmission` types? How do these summaries help
 differentiate car characteristics?
+
+Cars with fewer cylinders (specifcally 4) and manual transmission have
+the highest average mpg and lowest horsepower, while 8-cylinder cars,
+especially manuals, have the lowest mpg and highest horsepower. These
+grouped summaries make it easy to see that cylinder count and
+transmission type are linked to fuel efficiency and power.
 
 ------------------------------------------------------------------------
 
@@ -233,6 +379,9 @@ previous time periods is much easier in a long (tidy) format.
 
 ``` r
 # Your code here
+product_sales_wide <- product_sales_wide %>%
+  mutate(Growth_2021 = (Year_2021 - Year_2020) / Year_2020 * 100,
+    Growth_2022 = (Year_2022 - Year_2021) / Year_2021 * 100)
 ```
 
 2.  **Reshape to Long Format:** Reshape `product_sales_wide` into a long
@@ -242,6 +391,9 @@ previous time periods is much easier in a long (tidy) format.
 
 ``` r
 # Your code here
+product_sales_long <- pivot_longer(product_sales_wide, 
+  starts_with("Year_"), names_to = "Year", values_to = "Sales") %>%
+  mutate(Year = as.numeric(sub("Year_", "", Year)))
 ```
 
 3.  **Analysis in Long Format:** Using the `product_sales_long` dataset,
@@ -252,7 +404,22 @@ previous time periods is much easier in a long (tidy) format.
 
 ``` r
 # Your code here
+product_sales_long %>% group_by(product) %>% arrange(product, Year) %>% mutate(Growth_Rate = (Sales - lag(Sales)) / lag(Sales) * 100)
 ```
+
+    ## # A tibble: 9 × 6
+    ## # Groups:   product [3]
+    ##   product  Growth_2021 Growth_2022  Year Sales Growth_Rate
+    ##   <chr>          <dbl>       <dbl> <dbl> <dbl>       <dbl>
+    ## 1 Keyboard        6.25        5.88  2020   800       NA   
+    ## 2 Keyboard        6.25        5.88  2021   850        6.25
+    ## 3 Keyboard        6.25        5.88  2022   900        5.88
+    ## 4 Laptop         10          13.6   2020  1000       NA   
+    ## 5 Laptop         10          13.6   2021  1100       10   
+    ## 6 Laptop         10          13.6   2022  1250       13.6 
+    ## 7 Monitor        10           9.09  2020   500       NA   
+    ## 8 Monitor        10           9.09  2021   550       10   
+    ## 9 Monitor        10           9.09  2022   600        9.09
 
 ### Short Answer
 
@@ -282,15 +449,18 @@ handle students who may or may not have corresponding grade records.
     will require grouping by `student_id` and `student_name`.
 
 ``` r
-# Your code for inner_join and its explanation
-```
+# 1. Your code for inner_join and its explanation
+inner_join_result <- inner_join(students_demographics, student_grades, by = "student_id")
+#it returns only students who have both demographic and grade records, so students without grades are excluded.
 
-``` r
-# Your code for left_join and its explanation
-```
+# 2. Your code for left_join and its explanation
+left_join_result <- left_join(students_demographics, student_grades, by = "student_id")
+# Left join keeps all the students, but it fills grade info with NA if no grades exist.
 
-``` r
-# Your code for advanced mutate after left join
+# 3. Your code for advanced mutate after left join
+average_grades <- left_join_result %>%
+  group_by(student_id, student_name) %>%
+  summarise(avg_grade_score = mean(grade_score, na.rm = TRUE))
 ```
 
 ### Short Answer
@@ -301,7 +471,7 @@ present in one join but not the other, and explain why. What does the
 average grade calculation reveal about students with multiple grades or
 no grades?
 
-------------------------------------------------------------------------
+## The inner_join result has fewer rows than the left_join because it only includes students who have both demographic and grade records, excluding the students without grades. Students in the left_join but missing in the inner_join are the students who have demographic info but no grade records. The average grade calculation shows that students with multiple grades have their scores averaged, while those with no grades show an average of NA, indicating missing grade data.
 
 ### Task 2.3: Filtering Joins: Identifying Student Enrollment Status
 
@@ -325,14 +495,13 @@ categories of students based on their enrollment and grade records.
 
 ``` r
 # Your code for question 1 (semi_join)
-```
+enrolled_students <- semi_join(students_demographics, student_grades, by = "student_id")
 
-``` r
 # Your code for question 2 (anti_join on students_demographics)
-```
+students_without_grades <- anti_join(students_demographics, student_grades, by = "student_id")
 
-``` r
 # Your code for question 3 (anti_join on student_grades)
+grades_without_students <- anti_join(student_grades, students_demographics, by = "student_id")
 ```
 
 ### Short Answer
@@ -340,3 +509,12 @@ categories of students based on their enrollment and grade records.
 Describe the distinct insights gained from each of the three filtering
 joins in this task. How do these joins help in data validation and
 understanding the completeness of your student records?
+
+The semi_join shows which students are enrolled and have grade records,
+confirming who is engaged. The anti_join on demographics shows the
+students without any grades, helping identify any new or incomplete
+records. The anti_join on grades flags any grade entries that don’t
+match students, pointing out possible data errors or outdated records.
+These joins help in data validation and understanding the completeness
+of student records because it covers different scenarios that give us a
+more robust understanding of the data.

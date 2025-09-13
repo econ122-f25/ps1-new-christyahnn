@@ -229,10 +229,7 @@ product_sales_long <- pivot_longer(product_sales_wide,
 
 ```{r}
 # Your code here
-product_sales_long <- product_sales_long %>%
-  group_by(Growth_Rate) %>% 
-  arrange(Year) %>%
-  mutate(Growth_Rate = (Sales - lag(Sales)) / lag(Sales) * 100)
+product_sales_long %>% group_by(product) %>% arrange(product, Year) %>% mutate(Growth_Rate = (Sales - lag(Sales)) / lag(Sales) * 100)
 ```
 
 ### Short Answer
